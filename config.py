@@ -1,6 +1,6 @@
 # config.py
 
-APP_NAME = "Typora Deep Clone + AI Sidebar"
+APP_NAME = "SmartMarkdown"
 
 # 亮色主题：margin: 0 (靠左对齐), padding: 25px 25px (紧凑布局)
 GITHUB_TYPORA_CSS = """

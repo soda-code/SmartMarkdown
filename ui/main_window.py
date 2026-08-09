@@ -255,7 +255,7 @@ class MainWindow(QMainWindow):
 
     def load_demo_text(self):
         demo_md = (
-            "# 🚀 Typora Deep Clone + AI\n\n"
+            "# 🚀 SmartMarkdown\n\n"
             "这是一个拥有 **现代 UI 侧边栏**、**AI 文本二次编辑** 与 **随心光标插入** 的 Markdown 阅读器。\n\n"
             "---\n\n"
             "## 💡 核心功能说明\n\n"
