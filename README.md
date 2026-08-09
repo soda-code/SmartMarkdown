@@ -7,6 +7,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/soda-code/SmartMarkdown/pulls)
 
 **SmartMarkdown** 是一款面向科技作者、学术研究人员及开发者的下一代 Markdown 编辑器。它结合了现代生成式 AI 技术与强大的文档排版引擎，将复杂的公式计算、可视化图表绘制与智能创作无缝集成于一体。
+<img width="1712" height="1027" alt="image" src="https://github.com/user-attachments/assets/52815e41-2899-41c2-945e-f6d32ea7f956" />
 
 ---
 
