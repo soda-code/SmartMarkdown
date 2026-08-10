@@ -1,14 +1,20 @@
 import json
+from config import THEME_CSS, LOADING_PLACEHOLDER, HIDE_LOADING_JS
+
 
 class MarkdownParserEngine:
     @staticmethod
-    def get_editor_html(initial_content: str = "") -> str:
+    def get_editor_html(initial_content: str = "", theme: str = "light") -> str:
         """
         生成纯粹的 WYSIWYG 所见即所得编辑 HTML 模板。
-        取消了模式切换，强化了悬停矩形框提示 (Tooltip) 与高可靠通信。
+        取消模式切换，强化悬停矩形提示 (Tooltip)、高可靠通信，
+        并将主题 CSS 内联进文档，使亮/暗主题从首帧起全局生效。
+
+                :param theme: 'light' 或 'dark'
         """
         json_content = json.dumps(initial_content)
-        
+        theme_style = THEME_CSS.get(theme, THEME_CSS["light"]).strip()
+
         return f"""
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -18,8 +24,12 @@ class MarkdownParserEngine:
     <title>SmartMarkdown Editor</title>
     <!-- 使用高可用 CDN 节点 -->
     <link rel="stylesheet" href="https://unpkg.com/vditor@3.9.9/dist/index.css"/>
-    <script src="https://unpkg.com/vditor@3.9.9/dist/index.min.js"></script>
+        <script src="https://unpkg.com/vditor@3.9.9/dist/index.min.js"></script>
     <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <!-- 全局主题样式（启动即注入，保证首帧全局生效） -->
+    <style id="sm-theme-css">
+        {theme_style}
+    </style>
     <style>
         body, html {{ 
             margin: 0; padding: 0; height: 100%; width: 100%; 
@@ -43,6 +53,7 @@ class MarkdownParserEngine:
     </style>
 </head>
 <body>
+    {LOADING_PLACEHOLDER}
     <div id="vditor"></div>
     <script>
         var pyBridge = null;
@@ -68,8 +79,9 @@ class MarkdownParserEngine:
                 hljs: {{ enable: true, style: 'github' }},
                 markdown: {{ toc: true }}
             }},
-            after: function() {{
+                        after: function() {{
                 isEditorReady = true;
+                {HIDE_LOADING_JS}
             }},
             // 配置全套带 Tooltip 悬停框功能的工具栏
             toolbar: [
@@ -112,10 +124,21 @@ class MarkdownParserEngine:
             }}
         }}
 
-        function insertMarkdownContent(text) {{
+                function insertMarkdownContent(text) {{
             if (vditorEditor && isEditorReady) {{
                 vditorEditor.insertValue(text);
             }}
+        }}
+
+        // 4. 全局主题切换接口：由 Python set_theme() 动态调用
+        function applyTheme(cssText) {{
+            var s = document.getElementById('sm-theme-css');
+            if (!s) {{
+                s = document.createElement('style');
+                s.id = 'sm-theme-css';
+                document.head.appendChild(s);
+            }}
+            s.textContent = cssText;
         }}
     </script>
 </body>

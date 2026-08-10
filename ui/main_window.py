@@ -14,7 +14,7 @@ from PyQt6.QtWebChannel import QWebChannel
 from PyQt6.QtCore import QUrl, Qt, QObject, pyqtSlot, pyqtSignal, QTimer
 from PyQt6.QtGui import QAction, QKeySequence
 
-from config import APP_NAME
+from config import APP_NAME, THEME_CSS
 from md_parser import MarkdownParserEngine
 from file_manager import FileManager
 from ui.outline_widget import OutlineWidget
@@ -115,6 +115,7 @@ class MainWindow(QMainWindow):
             "api_key": "",
             "base_url": "https://api.deepseek.com/v1",
             "model": "deepseek-chat",
+            "theme": "light",
             "providers": {}
         }
         if os.path.exists(CONFIG_FILE):
@@ -192,14 +193,15 @@ class MainWindow(QMainWindow):
 
         view_menu.addSeparator()
 
+        saved_theme = self.ai_config.get("theme", "light")
         self.light_theme_act = self._make_action(
             "☀️ 亮色主题", None, lambda: self.set_theme("light"),
-            checkable=True, checked=True)
+            checkable=True, checked=(saved_theme != "dark"))
         view_menu.addAction(self.light_theme_act)
 
         self.dark_theme_act = self._make_action(
             "🌙 暗色主题", None, lambda: self.set_theme("dark"),
-            checkable=True, checked=False)
+            checkable=True, checked=(saved_theme == "dark"))
         view_menu.addAction(self.dark_theme_act)
 
         # 主题互斥
@@ -244,12 +246,16 @@ class MainWindow(QMainWindow):
         self.viewer.page().runJavaScript(f"document.execCommand('{command}');")
 
     def set_theme(self, theme: str):
-        """切换亮/暗主题（同步生效于 WebEngine 预览页）"""
-        bg, fg = ("#ffffff", "#333333") if theme == "light" else ("#36393e", "#b2b2b2")
-        js_code = (f"document.body.style.background='{bg}';"
-                   "var e=document.querySelector('.vditor');"
-                   f"if(e){{e.style.background='{bg}';e.style.color='{fg}';}}")
-        self.viewer.page().runJavaScript(js_code)
+        """切换亮/暗主题：动态调用页面 applyTheme() 注入全局主题 CSS，并持久化到配置。"""
+        # 从 config 的统一主题表中取对应 CSS
+        css = THEME_CSS.get(theme, THEME_CSS["light"]).strip()
+        css_literal = json.dumps(css)
+        self.viewer.page().runJavaScript(f"applyTheme({css_literal});")
+
+        # 持久化，保证下次启动时 md_parser 用正确的初始主题
+        self.ai_config["theme"] = theme
+        self.save_ai_config()
+
         self.light_theme_act.setChecked(theme == "light")
         self.dark_theme_act.setChecked(theme == "dark")
         self.status_bar.showMessage(f"🎨 已切换至{'暗色' if theme == 'dark' else '亮色'}主题")
@@ -304,7 +310,8 @@ class MainWindow(QMainWindow):
 
         demo_text = self.get_demo_text()
         self.current_markdown_text = demo_text
-        editor_html = MarkdownParserEngine.get_editor_html(demo_text)
+        theme = self.ai_config.get("theme", "light")
+        editor_html = MarkdownParserEngine.get_editor_html(demo_text, theme)
         self.viewer.setHtml(editor_html, QUrl("http://localhost/"))
         self.main_splitter.addWidget(self.viewer)
 
@@ -350,6 +357,12 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "提示", "AI 正在处理上一次请求，请稍候...")
             return
 
+        if self.ai_thread is not None:
+            # 复用已有的线程对象，避免重复创建/删除导致的对象生命周期问题
+            self.ai_thread.finished_signal.disconnect(self.on_ai_success)
+            self.ai_thread.error_signal.disconnect(self.on_ai_error)
+            self.ai_thread.deleteLater()
+
         self.ai_sidebar.set_loading(True)
         self.status_bar.showMessage("⏳ AI 正在处理侧边栏指令...")
 
@@ -362,7 +375,8 @@ class MainWindow(QMainWindow):
         )
         self.ai_thread.finished_signal.connect(self.on_ai_success)
         self.ai_thread.error_signal.connect(self.on_ai_error)
-        self.ai_thread.finished.connect(self.ai_thread.deleteLater)
+        # 注意：不能用 self.ai_thread.finished.connect(self.ai_thread.deleteLater)，
+        # 否则线程结束后再次请求删除已销毁的 QThread 对象，会导致闪退。
         self.ai_thread.start()
 
     def on_ai_success(self, reply: str):
