@@ -1,0 +1,11 @@
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\SmartMarkDown.exe
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\runtimes\win-x64\native\WebView2Loader.dll
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\SmartMarkDown.dll
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\SmartMarkDown.deps.json
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\SmartMarkDown.runtimeconfig.json
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\SmartMarkDown.pdb
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\Markdig.dll
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\Microsoft.Web.WebView2.Core.dll
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\Microsoft.Web.WebView2.WinForms.dll
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\Microsoft.Web.WebView2.Wpf.dll
+C:\Users\18895\Desktop\ai_samert\SmartMarkdown\SmartMarkDown\SmartMarkDown\bin\Release\net8.0-windows\publish\win-x64\WebView2Loader.dll
