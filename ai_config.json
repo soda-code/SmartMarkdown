@@ -1,8 +1,0 @@
-{
-  "current_provider": "DeepSeek",
-  "api_key": "sk-eb26fe3aa5c344aaa1a78b701dff5a99",
-  "base_url": "https://api.deepseek.com/v1",
-  "model": "deepseek-chat",
-  "theme": "dark",
-  "providers": {}
-}

@@ -1,143 +1,55 @@
-# SmartMarkdown 🚀
+# SmartMarkDown - 现代 AI 驱动的 Markdown 创作空间
 
-> 具备 AI 辅助写作、LaTeX 数学公式与 Mermaid 图表实时渲染的智能 Markdown 编辑器。
+SmartMarkDown 是一款基于 WPF、WebView2 和 .NET 8 构建的现代化 Markdown 编辑与阅读器。它融合了 VS Code 的极简设计美学与强大的 AI 赋能，专为追求效率与沉浸式书写的创作者打造。
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/soda-code/SmartMarkdown/pulls)
+## 🌟 主要功能
 
-**SmartMarkdown** 是一款面向科技作者、学术研究人员及开发者的下一代 Markdown 编辑器。它结合了现代生成式 AI 技术与强大的文档排版引擎，将复杂的公式计算、可视化图表绘制与智能创作无缝集成于一体。
-<img width="1712" height="1027" alt="image" src="https://github.com/user-attachments/assets/52815e41-2899-41c2-945e-f6d32ea7f956" />
+### 🖋️ 核心创作体验
+* **双栏实时预览**：内置 Chromium 内核渲染，编辑与预览同步。
+* **极简模式**：支持切换至“纯阅读”视图，消除界面干扰，专注于内容本身。
+* **多主题支持**：内置 **VS Code 经典 Dark+ 主题**与浅色模式，动态切换色彩，沉浸感极强。
+* **文件管理**：支持 Markdown 文件编辑、保存、另存为及一键导出为独立 HTML 文件。
 
----
+### 🤖 AI 智能赋能 (集成 OpenAI/DeepSeek 协议)
+* **智能润色**：一键修复语法错误并提升文风。
+* **自动摘要**：为长文生成核心要点（支持 Markdown 引用格式）。
+* **上下文续写**：根据现有内容，逻辑连贯地进行续写。
+* **多模型切换**：支持 OpenAI、DeepSeek、本地 Ollama 模型，可灵活配置 API Key。
 
-## ✨ 核心特性
-
-- **🤖 智能 AI 辅助写作**
-  - **流式续写与补全**：基于上下文智能预测并生成后续内容。
-  - **划词编辑与润色**：支持选中文本一键润色、语法纠错、长文缩写与扩写。
-  - **多模型支持**：无缝对接 OpenAI (GPT-4o)、Anthropic (Claude 3.5)、Ollama (本地大模型) 及 DeepSeek 等。
-- **📐 完整 LaTeX 数学公式**
-  - 基于 **KaTeX** 高性能渲染引擎，毫秒级响应。
-  - 支持行内公式（`$E=mc^2$`）与块级公式（`$$...$$`）。
-  - 内置常用数学符号与矩阵快捷输入。
-- **📊 文本化 Mermaid 图表**
-  - 支持流程图（Flowchart）、时序图（Sequence Diagram）、甘特图（Gantt）、思维导图（Mindmap）等。
-  - 代码变动实时预览，支持导出为高清晰度 SVG / PNG。
-- **⚡ 高效编辑体验**
-  - 基于 CodeMirror 6，提供极致流畅的打字体验与语法高亮。
-  - 双栏同步滚动与“所見即所得”混合模式。
-  - 全键盘快捷键支持、Vim 模式切按。
-- **🔒 隐私优先与导出**
-  - 本地优先（Local-First）架构，数据全盘掌控。
-  - 支持导出为 HTML、PDF、Word (.docx) 及带格式的图像。
+### 📊 专业排版支持
+* **Mermaid 流程图**：支持直接在代码块中编写并实时渲染流程图、时序图、甘特图。
+* **LaTeX 数学公式**：内置 KaTeX 引擎，支持 $E=mc^2$ 等行内与块级公式渲染。
+* **美化表格**：GFM 表格支持，自动应用斑马纹与高亮边框。
 
 ---
 
 ## 🛠️ 技术栈
-
-* **前端框架**：[React 18](https://react.dev/) / [Next.js](https://nextjs.org/) + [Tailwind CSS](https://tailwindcss.com/)
-* **编辑器底座**：[CodeMirror 6](https://codemirror.net/)
-* **Markdown 解析**：[remark](https://github.com/remarkjs/remark) / [rehype](https://github.com/rehypejs/rehype)
-* **数学渲染**：[KaTeX](https://katex.org/)
-* **图表引擎**：[Mermaid.js](https://mermaid.js.org/)
-* **状态管理**：[Zustand](https://github.com/pmndrs/zustand)
+* **UI 框架**: WPF (.NET 8.0)
+* **渲染引擎**: Microsoft.Web.WebView2
+* **Markdown 解析**: Markdig
+* **数学公式**: KaTeX
+* **图表渲染**: Mermaid.js
 
 ---
 
 ## 🚀 快速开始
 
-### 前置要求
-
-* [Node.js](https://nodejs.org/) >= 18.0.0
-* pnpm / npm / yarn
-
-### 安装步骤
-
-1. **克隆项目仓库**
-   ```bash
-   git clone https://github.com/soda-code/SmartMarkdown.git
-   cd SmartMarkdown
-   ```
-
-2. **安装依赖**
-   ```bash
-   pnpm install
-   # 或
-   npm install
-   ```
-
-3. **配置环境变量**
-   复制 `.env.example` 并重命名为 `.env.local`，填写你的 AI API Key：
-   ```bash
-   cp .env.example .env.local
-   ```
-   在 `.env.local` 中配置对应的服务密钥：
-   ```env
-   # API 配置示例
-   NEXT_PUBLIC_AI_PROVIDER=openai
-   OPENAI_API_KEY=your_openai_api_key_here
-   # 如使用本地 Ollama
-   OLLAMA_BASE_URL=http://localhost:11434
-   ```
-
-4. **启动开发服务器**
-   ```bash
-   pnpm dev
-   # 或
-   npm run dev
-   ```
-
-   在浏览器中打开 `http://localhost:3000` 即可开始使用。
+1. **克隆项目**：确保安装了 .NET 8.0 SDK。
+2. **构建项目**：使用 Visual Studio 2022/2026 打开 `SmartMarkDown.csproj`，重新生成解决方案。
+3. **配置模型**：首次运行时，点击顶部模型设置按钮，填入您的 API Key 即可使用 AI 功能。
+4. **运行**：按 F5 启动应用。
 
 ---
 
-## 📖 使用指南
+## 💡 使用说明
 
-### 1. 撰写 LaTeX 公式
-
-* **行内公式**：使用单个 `$` 包裹，例如 `$f(x) = ax + b$`
-* **块级公式**：使用 `$$` 包裹：
-  ```latex
-  $$
-  \frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \mathbf{u}) = 0
-  $$
-  ```
-
-### 2. 绘制 Mermaid 图表
-
-使用 ````mermaid` 代码块包裹语法：
-
-````markdown
-```mermaid
-graph LR
-    A[Markdown 源码] --> B(SmartMarkdown 解析器)
-    B --> C{渲染引擎}
-    C -->|LaTeX| D[KaTeX]
-    C -->|Diagram| E[Mermaid.js]
-    C -->|AI Prompt| F[LLM Stream]
-```
-````
-
-### 3. AI 交互
-
-* **唤起 AI 助手**：按 `Cmd + K` (Mac) 或 `Ctrl + K` (Windows) 打开 AI 提示词输入框。
-* **快捷选中文本**：选中编辑区文本，在浮动菜单中选择 **“润色”**、**“翻译”** 或 **“生成摘要”**。
+* **快捷键**：
+    * `Ctrl + N`: 新建文件
+    * `Ctrl + O`: 打开文件
+    * `Ctrl + S`: 保存文件
+* **AI 建议**：选中文字后点击顶部 AI 按钮，仅处理选区内容；不选中则处理全文。
 
 ---
 
-## 🤝 贡献指南
-
-我们非常欢迎社区的贡献！如果你有任何想法、Bug 反馈或功能建议：
-
-1. Fork 本仓库
-2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交你的修改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 提交 Pull Request
-
----
-
-## 📄 开源协议
-
-本项目基于 [MIT 协议](LICENSE) 开源。
+## 📝 许可证
+MIT License
