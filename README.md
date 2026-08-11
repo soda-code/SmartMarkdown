@@ -1,6 +1,7 @@
 # SmartMarkDown - 现代 AI 驱动的 Markdown 创作空间
 
 SmartMarkDown 是一款基于 WPF、WebView2 和 .NET 8 构建的现代化 Markdown 编辑与阅读器。它融合了 VS Code 的极简设计美学与强大的 AI 赋能，专为追求效率与沉浸式书写的创作者打造。
+![Uploading image.png…]()
 
 ## 🌟 主要功能
 
