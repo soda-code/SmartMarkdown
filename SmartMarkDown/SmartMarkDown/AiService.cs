@@ -24,34 +24,55 @@ namespace SmartMarkDown
 
         public List<AiProvider> Providers { get; } = new List<AiProvider>
         {
-            new AiProvider 
-            { 
-                Name = "DeepSeek Chat", 
-                Endpoint = "https://api.deepseek.com/v1/chat/completions", 
-                ModelId = "deepseek-chat", 
-                ApiKey = "" 
+            new AiProvider
+            {
+                Name = "DeepSeek Chat",
+                Endpoint = "https://api.deepseek.com/v1/chat/completions",
+                ModelId = "deepseek-chat",
+                ApiKey = ""
             },
-            new AiProvider 
-            { 
-                Name = "DeepSeek Reasoner", 
-                Endpoint = "https://api.deepseek.com/v1/chat/completions", 
-                ModelId = "deepseek-reasoner", 
-                ApiKey = "" 
+            new AiProvider
+            {
+                Name = "DeepSeek Reasoner",
+                Endpoint = "https://api.deepseek.com/v1/chat/completions",
+                ModelId = "deepseek-reasoner",
+                ApiKey = ""
             },
-            new AiProvider 
-            { 
-                Name = "OpenAI GPT-4o Mini", 
-                Endpoint = "https://api.openai.com/v1/chat/completions", 
-                ModelId = "gpt-4o-mini", 
-                ApiKey = "" 
+            new AiProvider
+            {
+                Name = "OpenAI GPT-4o Mini",
+                Endpoint = "https://api.openai.com/v1/chat/completions",
+                ModelId = "gpt-4o-mini",
+                ApiKey = ""
             },
-            new AiProvider 
-            { 
-                Name = "Ollama (本地模型)", 
-                Endpoint = "http://localhost:11434/v1/chat/completions", 
-                ModelId = "qwen2.5:latest", 
-                ApiKey = "ollama", 
-                RequiresKey = false 
+            new AiProvider
+            {
+                Name = "Kimi (Moonshot)",
+                Endpoint = "https://api.moonshot.cn/v1/chat/completions",
+                ModelId = "kimi-latest",
+                ApiKey = ""
+            },
+            new AiProvider
+            {
+                Name = "智谱 (Zhipu)",
+                Endpoint = "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+                ModelId = "glm-4",
+                ApiKey = ""
+            },
+            new AiProvider
+            {
+                Name = "小米 (Xiaomi MiMo)",
+                Endpoint = "https://api.xiaomimimo.com/v1/chat/completions",
+                ModelId = "mimo-v2.5-pro",
+                ApiKey = ""
+            },
+            new AiProvider
+            {
+                Name = "Ollama (本地模型)",
+                Endpoint = "http://localhost:11434/v1/chat/completions",
+                ModelId = "qwen2.5:latest",
+                ApiKey = "ollama",
+                RequiresKey = false
             }
         };
 
@@ -67,6 +88,11 @@ namespace SmartMarkDown
             if (CurrentProvider == null)
             {
                 throw new InvalidOperationException("未选择任何 AI 模型。");
+            }
+
+            if (string.IsNullOrWhiteSpace(CurrentProvider.Endpoint))
+            {
+                throw new InvalidOperationException($"当前模型 [{CurrentProvider.Name}] 的请求端点 (Endpoint) 无效或为空！");
             }
 
             if (CurrentProvider.RequiresKey && string.IsNullOrWhiteSpace(CurrentProvider.ApiKey))
@@ -85,10 +111,10 @@ namespace SmartMarkDown
                 temperature = 0.6
             };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, CurrentProvider.Endpoint);
+            var request = new HttpRequestMessage(HttpMethod.Post, CurrentProvider.Endpoint.Trim());
             if (!string.IsNullOrWhiteSpace(CurrentProvider.ApiKey))
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", CurrentProvider.ApiKey);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", CurrentProvider.ApiKey.Trim());
             }
 
             request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");

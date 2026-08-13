@@ -2,14 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-        Title="Untitled-1 - SmartMarkDown"
-        Height="800" Width="1200"
+        Title="Untitled-1 - SmartMarkDown" Height="800" Width="1200"
         MinHeight="550" MinWidth="850"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BgBrush}">
-    
+
     <Window.Resources>
-        <!-- 基础色彩定义 -->
         <SolidColorBrush x:Key="BgBrush" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="CardBrush" Color="#F3F3F3"/>
         <SolidColorBrush x:Key="BorderBrush" Color="#E5E5E5"/>
@@ -18,7 +16,6 @@
         <SolidColorBrush x:Key="ControlBg" Color="#F8F8F8"/>
         <SolidColorBrush x:Key="ControlHover" Color="#E8E8E8"/>
 
-        <!-- 菜单专属画刷 -->
         <SolidColorBrush x:Key="MenuPopupBg" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="MenuPopupBorder" Color="#CCCCCC"/>
         <SolidColorBrush x:Key="MenuHighlight" Color="#E8E8E8"/>
@@ -26,7 +23,6 @@
         <SolidColorBrush x:Key="StatusBarBg" Color="#007ACC"/>
         <SolidColorBrush x:Key="StatusBarFg" Color="#FFFFFF"/>
 
-        <!-- 分割线样式 -->
         <Style TargetType="Separator">
             <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
             <Setter Property="Margin" Value="4,4"/>
@@ -34,21 +30,21 @@
             <Setter Property="Focusable" Value="False"/>
         </Style>
 
-        <!-- 菜单顶级 Menu 样式 -->
         <Style TargetType="Menu">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
             <Setter Property="FontSize" Value="12"/>
         </Style>
 
-        <!-- VS Code 风格 MenuItem (彻底消除白条/多余滚动框) -->
+        <!-- 优化顶级菜单项的左右 Padding，使其显示得更紧凑 -->
         <Style TargetType="MenuItem">
             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
             <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="4,2"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="MenuItem">
-                        <Border x:Name="TemplateRoot" Background="Transparent" BorderBrush="Transparent" BorderThickness="0" CornerRadius="3" Margin="1" Padding="8,5">
+                        <Border x:Name="TemplateRoot" Background="Transparent" BorderBrush="Transparent" BorderThickness="0" CornerRadius="3" Margin="1" Padding="{TemplateBinding Padding}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
@@ -57,16 +53,10 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
-                                <!-- 勾选状态 -->
                                 <TextBlock x:Name="CheckMark" Grid.Column="0" Text="✔" Foreground="{DynamicResource TextPrimary}" FontSize="11" Margin="0,0,6,0" Visibility="Collapsed" VerticalAlignment="Center"/>
-
-                                <!-- 菜单文本 -->
                                 <ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True" VerticalAlignment="Center"/>
-
-                                <!-- 快捷键文本 -->
                                 <TextBlock Grid.Column="2" Text="{TemplateBinding InputGestureText}" Foreground="{DynamicResource TextMuted}" Margin="20,0,4,0" VerticalAlignment="Center"/>
 
-                                <!-- 下拉弹出层 (无滚动条，自适应高度) -->
                                 <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" Margin="0,2,0,0" Placement="Bottom" PopupAnimation="Fade">
                                     <Border x:Name="SubMenuBorder" Background="{DynamicResource MenuPopupBg}" BorderBrush="{DynamicResource MenuPopupBorder}" BorderThickness="1" CornerRadius="4" MinWidth="170" Padding="3">
                                         <Border.Effect>
@@ -94,7 +84,6 @@
             </Setter>
         </Style>
 
-        <!-- VS Code 风格扁平按钮 -->
         <Style x:Key="ModernButton" TargetType="Button">
             <Setter Property="Background" Value="{DynamicResource ControlBg}"/>
             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
@@ -121,7 +110,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- AI 强调操作按钮 -->
         <Style x:Key="AiPillButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
             <Setter Property="Background" Value="#0E639C"/>
             <Setter Property="Foreground" Value="#FFFFFF"/>
@@ -134,14 +122,12 @@
             </Style.Triggers>
         </Style>
 
-        <!-- 图标按钮 -->
         <Style x:Key="ModernIconButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
             <Setter Property="Width" Value="28"/>
             <Setter Property="Height" Value="26"/>
             <Setter Property="Padding" Value="0"/>
         </Style>
 
-        <!-- VS Code 风格 ComboBox -->
         <ControlTemplate x:Key="ModernComboBoxToggleButton" TargetType="ToggleButton">
             <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" SnapsToDevicePixels="true">
                 <Border HorizontalAlignment="Right" Width="18">
@@ -215,7 +201,6 @@
             <RowDefinition Height="24"/>
         </Grid.RowDefinitions>
 
-        <!-- 1. 顶部操作栏 -->
         <Border Grid.Row="0" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="8,4">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -224,7 +209,6 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- 左侧菜单体系 -->
                 <Menu Grid.Column="0" VerticalAlignment="Center">
                     <MenuItem Header="文件 (_F)">
                         <MenuItem Header="新建文件 (_N)" Click="BtnNew_Click" InputGestureText="Ctrl+N"/>
@@ -262,11 +246,25 @@
 
                     <MenuItem Header="视图 (_V)">
                         <MenuItem Click="BtnToggleView_Click" Header="仅阅读模式" IsCheckable="True" x:Name="MenuOnlyPreview"/>
+                        <MenuItem Click="BtnToggleOutline_Click" Header="显示大纲面板" IsCheckable="True" IsChecked="True" x:Name="MenuToggleOutline"/>
                         <MenuItem Click="BtnToggleTheme_Click" Header="VS Code 暗黑模式 (Dark+)" IsCheckable="True" x:Name="MenuDarkMode"/>
+                        <Separator/>
+                        <MenuItem Header="阅读版心宽度...">
+                            <MenuItem Click="MenuWidthCustom_Click" Header="设置自定义宽度 (px 或 %)..."/>
+                            <Separator/>
+                            <MenuItem Click="MenuWidthStandard_Click" Header="标准 (900px)" x:Name="MenuWidthStandard"/>
+                            <MenuItem Click="MenuWidthFull_Click" Header="全宽 (100%)" x:Name="MenuWidthFull"/>
+                            <MenuItem Click="MenuWidthNarrow_Click" Header="窄屏 (700px)" x:Name="MenuWidthNarrow"/>
+                        </MenuItem>
+                    </MenuItem>
+
+                    <!-- 新增：帮助菜单 -->
+                    <MenuItem Header="帮助 (_H)">
+                        <MenuItem Header="版本: v1.0.0" IsEnabled="False"/>
+                        <MenuItem Click="MenuOpenRepo_Click" Header="开源地址 (GitHub)..."/>
                     </MenuItem>
                 </Menu>
 
-                <!-- 右侧快捷操作区 -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Click="BtnNew_Click" Content="➕ 新建" Height="26" Margin="0,0,4,0" Style="{StaticResource ModernButton}" ToolTip="新建文件 (Ctrl+N)"/>
                     <Button Click="BtnOpen_Click" Content="📂 打开" Height="26" Margin="0,0,6,0" Style="{StaticResource ModernButton}" ToolTip="打开文件 (Ctrl+O)"/>
@@ -297,25 +295,63 @@
             </Grid>
         </Border>
 
-        <!-- 2. 双栏工作区 (中间滚动条已隐藏，滚轮依然正常工作) -->
+        <!-- 主体区域 -->
         <Grid Background="{DynamicResource BgBrush}" Grid.Row="1">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220" x:Name="ColOutline"/>
+                <ColumnDefinition Width="4" x:Name="ColOutlineSplitter"/>
                 <ColumnDefinition Width="1*" x:Name="ColEditor"/>
                 <ColumnDefinition Width="4" x:Name="ColSplitter"/>
                 <ColumnDefinition Width="1*" x:Name="ColPreview"/>
             </Grid.ColumnDefinitions>
 
-            <!-- 左侧：编辑区 -->
-            <TextBox AcceptsReturn="True" AcceptsTab="True" Background="{DynamicResource BgBrush}" BorderThickness="0" FontFamily="Cascadia Code, Consolas, Fira Code, Courier New" FontSize="14" Foreground="{DynamicResource TextPrimary}" Grid.Column="0" Padding="16" TextChanged="TxtMarkdown_TextChanged" TextWrapping="Wrap" VerticalScrollBarVisibility="Hidden" x:Name="TxtMarkdown"/>
+            <!-- 大纲面板 -->
+            <Border Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0" Grid.Column="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}" Grid.Row="0" Margin="12,0,0,0" Text="📑 文档大纲" VerticalAlignment="Center"/>
+                    <ListBox Background="Transparent" BorderThickness="0" DisplayMemberPath="DisplayText" FontSize="12" Foreground="{DynamicResource TextPrimary}" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ListOutline_SelectionChanged" x:Name="ListOutline">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="8,4"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border Background="Transparent" CornerRadius="3" Margin="4,2" Padding="{TemplateBinding Padding}" x:Name="Bd">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" TargetName="Bd" Value="{DynamicResource ControlHover}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="Background" TargetName="Bd" Value="#094771"/>
+                                                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </Grid>
+            </Border>
 
-            <!-- 分割条 -->
-            <GridSplitter Background="{DynamicResource BorderBrush}" Cursor="SizeWE" Grid.Column="1" HorizontalAlignment="Stretch" x:Name="MainSplitter"/>
+            <GridSplitter Background="{DynamicResource BorderBrush}" Cursor="SizeWE" Grid.Column="1" HorizontalAlignment="Stretch" x:Name="OutlineSplitter"/>
 
-            <!-- 右侧：WebView2 渲染区 -->
-            <wv2:WebView2 x:Name="BrowserPreview" Grid.Column="2" />
+            <!-- Markdown 编辑器 -->
+            <TextBox AcceptsReturn="True" AcceptsTab="True" Background="{DynamicResource BgBrush}" BorderThickness="0" FontFamily="Cascadia Code, Consolas, Fira Code, Courier New" FontSize="14" Foreground="{DynamicResource TextPrimary}" Grid.Column="2" Padding="16" TextChanged="TxtMarkdown_TextChanged" TextWrapping="Wrap" VerticalScrollBarVisibility="Hidden" x:Name="TxtMarkdown"/>
+
+            <GridSplitter Background="{DynamicResource BorderBrush}" Cursor="SizeWE" Grid.Column="3" HorizontalAlignment="Stretch" x:Name="MainSplitter"/>
+
+            <!-- 网页预览区 -->
+            <wv2:WebView2 Grid.Column="4" x:Name="BrowserPreview" />
         </Grid>
 
-        <!-- 3. VS Code 经典状态栏 -->
         <Grid Background="{DynamicResource StatusBarBg}" Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
