@@ -36,11 +36,12 @@
             <Setter Property="FontSize" Value="12"/>
         </Style>
 
-        <!-- 优化顶级菜单项的左右 Padding，使其显示得更紧凑 -->
+        <!-- 调整菜单项样式，让其更加紧凑靠左 -->
         <Style TargetType="MenuItem">
             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Padding" Value="4,2"/>
+            <Setter Property="Margin" Value="0,0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="MenuItem">
@@ -58,7 +59,7 @@
                                 <TextBlock Grid.Column="2" Text="{TemplateBinding InputGestureText}" Foreground="{DynamicResource TextMuted}" Margin="20,0,4,0" VerticalAlignment="Center"/>
 
                                 <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" Margin="0,2,0,0" Placement="Bottom" PopupAnimation="Fade">
-                                    <Border x:Name="SubMenuBorder" Background="{DynamicResource MenuPopupBg}" BorderBrush="{DynamicResource MenuPopupBorder}" BorderThickness="1" CornerRadius="4" MinWidth="170" Padding="3">
+                                    <Border x:Name="SubMenuBorder" Background="{DynamicResource MenuPopupBg}" BorderBrush="{DynamicResource MenuPopupBorder}" BorderThickness="1" CornerRadius="4" MinWidth="180" Padding="3">
                                         <Border.Effect>
                                             <DropShadowEffect BlurRadius="10" Color="Black" Direction="270" Opacity="0.3" ShadowDepth="3"/>
                                         </Border.Effect>
@@ -201,15 +202,10 @@
             <RowDefinition Height="24"/>
         </Grid.RowDefinitions>
 
+        <!-- 使用 WrapPanel 包裹整个顶部栏，支持窗口缩小自适应折行，防止右侧按钮被裁切 -->
         <Border Grid.Row="0" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="8,4">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <Menu Grid.Column="0" VerticalAlignment="Center">
+            <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Menu VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,2">
                     <MenuItem Header="文件 (_F)">
                         <MenuItem Header="新建文件 (_N)" Click="BtnNew_Click" InputGestureText="Ctrl+N"/>
                         <MenuItem Header="打开文件 (_O)..." Click="BtnOpen_Click" InputGestureText="Ctrl+O"/>
@@ -222,17 +218,51 @@
                         <MenuItem Header="退出 (_X)" Click="MenuExit_Click"/>
                     </MenuItem>
 
-                    <MenuItem Header="编辑与格式 (_E)">
-                        <MenuItem Header="粗体 (**B**)" Click="ToolInsertBold_Click" InputGestureText="Ctrl+B"/>
-                        <MenuItem Header="斜体 (*I*)" Click="ToolInsertItalic_Click" InputGestureText="Ctrl+I"/>
-                        <MenuItem Header="二级标题 (## )" Click="ToolInsertH2_Click"/>
-                        <MenuItem Header="代码块 (```)" Click="ToolInsertCode_Click"/>
-                        <MenuItem Click="ToolInsertTable_Click" Header="插入表格模板"/>
-                        <MenuItem Click="ToolInsertMermaid_Click" Header="插入流程图 (Mermaid)"/>
-                        <MenuItem Click="ToolInsertMath_Click" Header="插入数学公式 (LaTeX)"/>
-                        <MenuItem Click="ToolInsertLink_Click" Header="插入超链接"/>
+                    <MenuItem Header="编辑 (_E)">
+                        <MenuItem Header="撤销 (Undo)" InputGestureText="Ctrl+Z"/>
+                        <MenuItem Header="重做 (Redo)" InputGestureText="Ctrl+Y"/>
+                        <Separator/>
+                        <MenuItem Header="剪切 (Cut)" InputGestureText="Ctrl+X"/>
+                        <MenuItem Header="复制 (Copy)" InputGestureText="Ctrl+C"/>
+                        <MenuItem Header="粘贴 (Paste)" InputGestureText="Ctrl+V"/>
                         <Separator/>
                         <MenuItem Click="ToolClear_Click" Header="清空文档"/>
+                    </MenuItem>
+
+                    <MenuItem Header="段落 (_P)">
+                        <MenuItem Header="一级标题 (Heading 1)" Click="ToolInsertH2_Click" InputGestureText="Ctrl+1"/>
+                        <MenuItem Header="二级标题 (Heading 2)" Click="ToolInsertH2_Click" InputGestureText="Ctrl+2"/>
+                        <MenuItem Header="三级标题 (Heading 3)" Click="ToolInsertH2_Click" InputGestureText="Ctrl+3"/>
+                        <Separator/>
+                        <MenuItem Header="正文 (Paragraph)" InputGestureText="Ctrl+0"/>
+                        <Separator/>
+                        <MenuItem Header="无序列表 (Bullet List)"/>
+                        <MenuItem Header="有序列表 (Ordered List)"/>
+                        <MenuItem Header="任务列表 (Task List)"/>
+                        <Separator/>
+                        <MenuItem Header="引用块 (Blockquote)" InputGestureText="Ctrl+Shift+Q"/>
+                    </MenuItem>
+
+                    <MenuItem Header="格式 (_Format)">
+                        <MenuItem Header="粗体 (**Bold**)" Click="ToolInsertBold_Click" InputGestureText="Ctrl+B"/>
+                        <MenuItem Header="斜体 (*Italic*)" Click="ToolInsertItalic_Click" InputGestureText="Ctrl+I"/>
+                        <MenuItem Header="下划线 (Underline)" InputGestureText="Ctrl+U"/>
+                        <MenuItem Header="删除线 (Strikethrough)" InputGestureText="Alt+Shift+5"/>
+                        <MenuItem Header="高亮 (Highlight)"/>
+                        <Separator/>
+                        <MenuItem Header="代码块 (Code Span)" Click="ToolInsertCode_Click" InputGestureText="Ctrl+Shift+K"/>
+                        <MenuItem Header="数学公式 (Math Block)" Click="ToolInsertMath_Click"/>
+                    </MenuItem>
+
+                    <MenuItem Header="插入 (_Insert)">
+                        <MenuItem Header="图片..." />
+                        <MenuItem Header="超链接..." Click="ToolInsertLink_Click" InputGestureText="Ctrl+K"/>
+                        <MenuItem Header="代码块" Click="ToolInsertCode_Click"/>
+                        <Separator/>
+                        <MenuItem Header="表格模板" Click="ToolInsertTable_Click"/>
+                        <MenuItem Header="流程图 (Mermaid)" Click="ToolInsertMermaid_Click"/>
+                        <Separator/>
+                        <MenuItem Header="水平分割线 (Horizontal Line)"/>
                     </MenuItem>
 
                     <MenuItem Header="✨ AI 工具箱 (_A)">
@@ -258,41 +288,40 @@
                         </MenuItem>
                     </MenuItem>
 
-                    <!-- 新增：帮助菜单 -->
                     <MenuItem Header="帮助 (_H)">
-                        <MenuItem Header="版本: v1.0.0" IsEnabled="False"/>
+                        <MenuItem Header="版本: v1.1.0" IsEnabled="False"/>
                         <MenuItem Click="MenuOpenRepo_Click" Header="开源地址 (GitHub)..."/>
                     </MenuItem>
                 </Menu>
 
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Click="BtnNew_Click" Content="➕ 新建" Height="26" Margin="0,0,4,0" Style="{StaticResource ModernButton}" ToolTip="新建文件 (Ctrl+N)"/>
-                    <Button Click="BtnOpen_Click" Content="📂 打开" Height="26" Margin="0,0,6,0" Style="{StaticResource ModernButton}" ToolTip="打开文件 (Ctrl+O)"/>
+                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,2,0,2">
+                    <Button Click="BtnNew_Click" Content="➕ 新建" Height="26" Margin="0,2,4,2" Style="{StaticResource ModernButton}" ToolTip="新建文件 (Ctrl+N)"/>
+                    <Button Click="BtnOpen_Click" Content="📂 打开" Height="26" Margin="0,2,6,2" Style="{StaticResource ModernButton}" ToolTip="打开文件 (Ctrl+O)"/>
 
-                    <Rectangle Fill="{DynamicResource BorderBrush}" Height="14" Margin="2,0,8,0" Width="1"/>
+                    <Rectangle Fill="{DynamicResource BorderBrush}" Height="14" Margin="2,0,8,0" VerticalAlignment="Center" Width="1"/>
 
                     <TextBlock FontSize="12" Foreground="{DynamicResource TextMuted}" Margin="0,0,5,0" Text="AI 模型:" VerticalAlignment="Center"/>
-                    <ComboBox Height="26" SelectionChanged="CmbModels_SelectionChanged" Style="{StaticResource ModernComboBox}" VerticalAlignment="Center" Width="145" x:Name="CmbModels">
+                    <ComboBox Height="26" Margin="0,2" SelectionChanged="CmbModels_SelectionChanged" Style="{StaticResource ModernComboBox}" VerticalAlignment="Center" Width="130" x:Name="CmbModels">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Click="BtnConfigKey_Click" Content="⚙️" Margin="3,0,0,0" Style="{StaticResource ModernIconButton}" ToolTip="配置当前模型 API Key"/>
+                    <Button Click="BtnConfigKey_Click" Content="⚙️" Margin="3,2,0,2" Style="{StaticResource ModernIconButton}" ToolTip="配置当前模型 API Key"/>
 
-                    <Rectangle Fill="{DynamicResource BorderBrush}" Height="14" Margin="8,0" Width="1"/>
+                    <Rectangle Fill="{DynamicResource BorderBrush}" Height="14" Margin="8,0" VerticalAlignment="Center" Width="1"/>
 
-                    <Button Click="AiPolish_Click" Content="✨ AI 润色" Height="26" Style="{StaticResource AiPillButton}"/>
-                    <Button Click="AiSummarize_Click" Content="📝 摘要" Height="26" Style="{StaticResource AiPillButton}"/>
-                    <Button Click="AiContinue_Click" Content="✍️ 续写" Height="26" Style="{StaticResource AiPillButton}"/>
+                    <Button Click="AiPolish_Click" Content="✨ 润色" Height="26" Margin="0,2" Style="{StaticResource AiPillButton}"/>
+                    <Button Click="AiSummarize_Click" Content="📝 摘要" Height="26" Margin="2" Style="{StaticResource AiPillButton}"/>
+                    <Button Click="AiContinue_Click" Content="✍️ 续写" Height="26" Margin="2,2,0,2" Style="{StaticResource AiPillButton}"/>
 
-                    <Rectangle Fill="{DynamicResource BorderBrush}" Height="14" Margin="8,0" Width="1"/>
+                    <Rectangle Fill="{DynamicResource BorderBrush}" Height="14" Margin="8,0" VerticalAlignment="Center" Width="1"/>
 
-                    <Button Click="BtnToggleView_Click" Content="👁️ 纯阅读" Height="26" Style="{StaticResource ModernButton}" x:Name="BtnToggleView"/>
-                    <Button Click="BtnToggleTheme_Click" Content="🌙" Margin="2,0,0,0" Style="{StaticResource ModernIconButton}" ToolTip="切换 VS Code 主题" x:Name="BtnThemeToggle"/>
-                </StackPanel>
-            </Grid>
+                    <Button Click="BtnToggleView_Click" Content="👁️ 预览" Height="26" Margin="0,2" Style="{StaticResource ModernButton}" x:Name="BtnToggleView"/>
+                    <Button Click="BtnToggleTheme_Click" Content="🌙" Margin="2,2,0,2" Style="{StaticResource ModernIconButton}" ToolTip="切换 VS Code 主题" x:Name="BtnThemeToggle"/>
+                </WrapPanel>
+            </WrapPanel>
         </Border>
 
         <!-- 主体区域 -->

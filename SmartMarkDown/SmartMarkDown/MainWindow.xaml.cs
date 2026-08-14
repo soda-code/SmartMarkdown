@@ -37,6 +37,7 @@ namespace SmartMarkDown
         private bool _isInitializing = false;
         private bool _isWebViewInitialized = false;
         private Timer? _debounceTimer;
+        private CancellationTokenSource? _cts;
         private string _currentMaxWidth = "900px";
 
         public MainWindow()
@@ -53,12 +54,19 @@ namespace SmartMarkDown
             CmbModels.SelectedIndex = 0;
 
             KeyDown += MainWindow_KeyDown;
+            Closed += MainWindow_Closed;
 
             BrowserPreview.CoreWebView2InitializationCompleted += BrowserPreview_CoreWebView2InitializationCompleted;
             _ = BrowserPreview.EnsureCoreWebView2Async();
 
-            // 绑定滚动事件实现平滑同步
             TxtMarkdown.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(TxtMarkdown_ScrollChanged));
+        }
+
+        private void MainWindow_Closed(object? sender, EventArgs e)
+        {
+            _debounceTimer?.Dispose();
+            _cts?.Cancel();
+            _cts?.Dispose();
         }
 
         private async void TxtMarkdown_ScrollChanged(object? sender, ScrollChangedEventArgs e)
@@ -90,11 +98,11 @@ namespace SmartMarkDown
                 : "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css";
 
             string bgColor = _isDarkMode ? "#1E1E1E" : "#FFFFFF";
-            string textColor = _isDarkMode ? "#D4D4D4" : "#333333";
-            string headingColor = _isDarkMode ? "#E1E4E8" : "#111827";
-            string tableBgEven = _isDarkMode ? "#252526" : "#F6F8FA";
-            string tableBorder = _isDarkMode ? "#3C3C3C" : "#D0D7DE";
-            string scrollThumb = _isDarkMode ? "#424242" : "#C1C1C1";
+            string textColor = _isDarkMode ? "#F0F0F0" : "#333333";        // 使用极亮白灰 #F0F0F0
+            string headingColor = _isDarkMode ? "#FFFFFF" : "#111827";     // 纯白标题 #FFFFFF
+            string tableBgEven = _isDarkMode ? "#2D2D2D" : "#F6F8FA";
+            string tableBorder = _isDarkMode ? "#444444" : "#D0D7DE";
+            string scrollThumb = _isDarkMode ? "#555555" : "#C1C1C1";
             string themeName = _isDarkMode ? "dark" : "default";
 
             string skeletonHtml = @"
@@ -117,11 +125,21 @@ namespace SmartMarkDown
                         max-width: " + _currentMaxWidth + @"; margin: 0 auto; padding: 24px 40px;
                         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Consolas', sans-serif;
                     }
-                    .markdown-body { background-color: transparent !important; color: " + textColor + @" !important; }
-                    .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 { color: " + headingColor + @" !important; }
-                    .markdown-body table { border-collapse: collapse; width: 100%; margin: 16px 0; display: table !important; }
+                    
+                    /* 强制覆盖 markdown-body 内部所有文本及标签颜色，防止被第三方 CSS 压制 */
+                    .markdown-body, .markdown-body p, .markdown-body li, .markdown-body blockquote, .markdown-body span { 
+                        background-color: transparent !important; 
+                        color: " + textColor + @" !important; 
+                    }
+                    .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 { 
+                        color: " + headingColor + @" !important; 
+                    }
+                    
+                    .markdown-body table { border-collapse: collapse; width: 100%; margin: 16px 0; display: table !important; background-color: transparent !important; }
                     .markdown-body table th, .markdown-body table td { border: 1px solid " + tableBorder + @" !important; padding: 8px 14px; color: " + textColor + @" !important; }
+                    .markdown-body table tr { background-color: " + (_isDarkMode ? "#1E1E1E" : "#FFFFFF") + @" !important; }
                     .markdown-body table tr:nth-child(2n) { background-color: " + tableBgEven + @" !important; }
+
                     .markdown-body pre { background-color: " + (_isDarkMode ? "#252526" : "#F6F8FA") + @" !important; border: 1px solid " + tableBorder + @"; border-radius: 6px; }
                     .markdown-body code { color: " + textColor + @" !important; }
                     .mermaid { background: transparent; text-align: center; margin: 20px 0; }
@@ -167,7 +185,6 @@ namespace SmartMarkDown
 
             BrowserPreview.NavigateToString(skeletonHtml);
         }
-
         private void MainWindow_KeyDown(object? sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control)
@@ -228,7 +245,11 @@ namespace SmartMarkDown
         {
             if (!_isInitializing) { _isModified = true; UpdateWindowTitle(); }
             string text = TxtMarkdown.Text ?? string.Empty;
-            StatusWordCount.Text = $"{text.Length} 字符 | {Regex.Matches(text, @"[\w\u4e00-\u9fa5]+").Count} 词";
+
+            string cleanText = Regex.Replace(text, @"[*#`_>\[\]()!|-]", "");
+            int wordCount = Regex.Matches(cleanText, @"[\w\u4e00-\u9fa5]+").Count;
+            StatusWordCount.Text = $"{text.Length} 字符 | {wordCount} 词";
+
             RefreshOutline(text);
 
             _debounceTimer?.Dispose();
@@ -389,6 +410,34 @@ namespace SmartMarkDown
             BtnThemeToggle.Content = _isDarkMode ? "☀️" : "🌙";
             MenuDarkMode.IsChecked = _isDarkMode;
 
+            var resources = Application.Current.MainWindow.Resources;
+            if (_isDarkMode)
+            {
+                resources["BgBrush"] = new SolidColorBrush(Color.FromRgb(0x1E, 0x1E, 0x1E));
+                resources["CardBrush"] = new SolidColorBrush(Color.FromRgb(0x25, 0x25, 0x26));
+                resources["BorderBrush"] = new SolidColorBrush(Color.FromRgb(0x3C, 0x3C, 0x3C));
+                resources["TextPrimary"] = new SolidColorBrush(Color.FromRgb(0xD4, 0xD4, 0xD4));
+                resources["TextMuted"] = new SolidColorBrush(Color.FromRgb(0x85, 0x85, 0x85));
+                resources["ControlBg"] = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x2D));
+                resources["ControlHover"] = new SolidColorBrush(Color.FromRgb(0x38, 0x38, 0x38));
+                resources["MenuPopupBg"] = new SolidColorBrush(Color.FromRgb(0x25, 0x25, 0x26));
+                resources["MenuPopupBorder"] = new SolidColorBrush(Color.FromRgb(0x45, 0x45, 0x45));
+                resources["MenuHighlight"] = new SolidColorBrush(Color.FromRgb(0x09, 0x47, 0x71));
+            }
+            else
+            {
+                resources["BgBrush"] = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+                resources["CardBrush"] = new SolidColorBrush(Color.FromRgb(0xF3, 0xF3, 0xF3));
+                resources["BorderBrush"] = new SolidColorBrush(Color.FromRgb(0xE5, 0xE5, 0xE5));
+                resources["TextPrimary"] = new SolidColorBrush(Color.FromRgb(0x33, 0x33, 0x33));
+                resources["TextMuted"] = new SolidColorBrush(Color.FromRgb(0x71, 0x71, 0x71));
+                resources["ControlBg"] = new SolidColorBrush(Color.FromRgb(0xF8, 0xF8, 0xF8));
+                resources["ControlHover"] = new SolidColorBrush(Color.FromRgb(0xE8, 0xE8, 0xE8));
+                resources["MenuPopupBg"] = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
+                resources["MenuPopupBorder"] = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
+                resources["MenuHighlight"] = new SolidColorBrush(Color.FromRgb(0xE8, 0xE8, 0xE8));
+            }
+
             if (_isWebViewInitialized && BrowserPreview?.CoreWebView2 != null)
             {
                 string cssTheme = _isDarkMode
@@ -422,14 +471,18 @@ namespace SmartMarkDown
             string targetText = !string.IsNullOrWhiteSpace(selection) ? selection : TxtMarkdown.Text;
             if (string.IsNullOrWhiteSpace(targetText)) return;
 
+            _cts?.Cancel();
+            _cts = new CancellationTokenSource();
+
             try
             {
                 PanelAiLoading.Visibility = Visibility.Visible;
-                string result = await _aiService.ProcessAsync(prompt, targetText);
+                string result = await _aiService.ProcessAsync(prompt, targetText, _cts.Token);
                 if (append) TxtMarkdown.AppendText("\n\n" + result);
                 else if (replaceSelection && !string.IsNullOrWhiteSpace(selection)) TxtMarkdown.SelectedText = result;
                 else TxtMarkdown.Text = result;
             }
+            catch (OperationCanceledException) { /* 忽略取消异常 */ }
             catch (Exception ex) { MessageBox.Show(ex.Message, "AI 处理失败"); }
             finally { PanelAiLoading.Visibility = Visibility.Collapsed; }
         }

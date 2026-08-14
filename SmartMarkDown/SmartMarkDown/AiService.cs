@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SmartMarkDown
@@ -83,7 +84,7 @@ namespace SmartMarkDown
             CurrentProvider = Providers[0];
         }
 
-        public async Task<string> ProcessAsync(string systemPrompt, string userContent)
+        public async Task<string> ProcessAsync(string systemPrompt, string userContent, CancellationToken cancellationToken = default)
         {
             if (CurrentProvider == null)
             {
@@ -119,7 +120,7 @@ namespace SmartMarkDown
 
             request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
 
-            var response = await _http.SendAsync(request);
+            var response = await _http.SendAsync(request, cancellationToken);
             var json = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
