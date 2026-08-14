@@ -36,7 +36,7 @@
             <Setter Property="FontSize" Value="12"/>
         </Style>
 
-        <!-- 调整菜单项样式，让其更加紧凑靠左 -->
+        <!-- 紧凑的菜单项样式 -->
         <Style TargetType="MenuItem">
             <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
             <Setter Property="FontSize" Value="12"/>
@@ -202,10 +202,11 @@
             <RowDefinition Height="24"/>
         </Grid.RowDefinitions>
 
-        <!-- 使用 WrapPanel 包裹整个顶部栏，支持窗口缩小自适应折行，防止右侧按钮被裁切 -->
+        <!-- 顶部区域：使用 StackPanel 垂直排列菜单和快捷工具栏，确保绝不拥挤裁切 -->
         <Border Grid.Row="0" Background="{DynamicResource CardBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" Padding="8,4">
-            <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Menu VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,2">
+            <StackPanel Orientation="Vertical">
+                <!-- 第一行：主菜单栏 -->
+                <Menu VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,4">
                     <MenuItem Header="文件 (_F)">
                         <MenuItem Header="新建文件 (_N)" Click="BtnNew_Click" InputGestureText="Ctrl+N"/>
                         <MenuItem Header="打开文件 (_O)..." Click="BtnOpen_Click" InputGestureText="Ctrl+O"/>
@@ -294,7 +295,8 @@
                     </MenuItem>
                 </Menu>
 
-                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,2,0,2">
+                <!-- 第二行：快捷工具栏与 AI 按钮，支持 WrapPanel 自适应折行 -->
+                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Click="BtnNew_Click" Content="➕ 新建" Height="26" Margin="0,2,4,2" Style="{StaticResource ModernButton}" ToolTip="新建文件 (Ctrl+N)"/>
                     <Button Click="BtnOpen_Click" Content="📂 打开" Height="26" Margin="0,2,6,2" Style="{StaticResource ModernButton}" ToolTip="打开文件 (Ctrl+O)"/>
 
@@ -321,7 +323,7 @@
                     <Button Click="BtnToggleView_Click" Content="👁️ 预览" Height="26" Margin="0,2" Style="{StaticResource ModernButton}" x:Name="BtnToggleView"/>
                     <Button Click="BtnToggleTheme_Click" Content="🌙" Margin="2,2,0,2" Style="{StaticResource ModernIconButton}" ToolTip="切换 VS Code 主题" x:Name="BtnThemeToggle"/>
                 </WrapPanel>
-            </WrapPanel>
+            </StackPanel>
         </Border>
 
         <!-- 主体区域 -->
