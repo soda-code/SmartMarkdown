@@ -93,18 +93,31 @@ namespace SmartMarkDown
         {
             if (!_isWebViewInitialized || BrowserPreview?.CoreWebView2 == null) return;
 
-            string cssTheme = _isDarkMode
-                ? "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-dark.min.css"
-                : "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css";
+            // 1. 定义配置变量
+            string cssTheme, bgColor, textColor, headingColor, tableBgEven, tableBorder, scrollThumb, themeName;
 
-            string bgColor = _isDarkMode ? "#1E1E1E" : "#FFFFFF";
-            string textColor = _isDarkMode ? "#F0F0F0" : "#333333";        // 使用极亮白灰 #F0F0F0
-            string headingColor = _isDarkMode ? "#FFFFFF" : "#111827";     // 纯白标题 #FFFFFF
-            string tableBgEven = _isDarkMode ? "#2D2D2D" : "#F6F8FA";
-            string tableBorder = _isDarkMode ? "#444444" : "#D0D7DE";
-            string scrollThumb = _isDarkMode ? "#555555" : "#C1C1C1";
-            string themeName = _isDarkMode ? "dark" : "default";
-
+            if (_isDarkMode)
+            {
+                cssTheme = "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-dark.min.css";
+                bgColor = "#1E1E1E";
+                textColor = "#F0F0F0";
+                headingColor = "#FFFFFF";
+                tableBgEven = "#2D2D2D";
+                tableBorder = "#444444";
+                scrollThumb = "#555555";
+                themeName = "dark";
+            }
+            else
+            {
+                cssTheme = "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css";
+                bgColor = "#FFFFFF";
+                textColor = "#777777";
+                headingColor = "#444444";
+                tableBgEven = "#F6F8FA";
+                tableBorder = "#D0D7DE";
+                scrollThumb = "#C1C1C1";
+                themeName = "default";
+            }
             string skeletonHtml = @"
             <!DOCTYPE html>
             <html>
